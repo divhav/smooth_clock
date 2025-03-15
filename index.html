@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock 00:00:00</title>
+    <link rel="icon" type="image/x-icon" href="./clock.png">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+            position: relative;
+        }
+        #clock {
+            font-size: 8rem;
+            font-weight: bold;
+            transition: all 0.5s ease-in-out;
+        }
+        #settings-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        #settings-icon:hover {
+            transform: rotate(90deg);
+        }
+        #settings-menu {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: white;
+            color: black;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease-in-out;
+        }
+        select {
+            font-size: 1rem;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+            width: 100%;
+        }
+        select:focus {
+            border-color: #007bff;
+        }
+        .prevent-select {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="prevent-select">
+    <div id="clock">00:00:00</div>
+    <div id="settings-icon" onclick="toggleMenu()"><img src="./img.png" alt="Gear" height="auto" width="20px"></div>
+    <div id="settings-menu">
+        <label>Ζώνη Ώρας</label>
+        <select id="timezone" onchange="updateClock()">
+            <script>
+                const timezones = Intl.supportedValuesOf('timeZone');
+                timezones.forEach(zone => {
+                    document.write(`<option value="${zone}">${zone.replace('_', ' ')}</option>`);
+                });
+            </script>
+        </select>
+    </div>
+
+    <script>
+        function updateClock() {
+            const timezoneSelect = document.getElementById("timezone");
+            const timezone = timezoneSelect.value || Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const now = new Date();
+            const options = { timeZone: timezone, hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const timeString = new Intl.DateTimeFormat('el-GR', options).format(now);
+            document.getElementById("clock").textContent = timeString;
+            document.title = `Clock ${timeString}`;
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById("settings-menu");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+
+        function setDefaultTimezone() {
+            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById("timezone").value = userTimezone;
+        }
+
+        setDefaultTimezone();
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
